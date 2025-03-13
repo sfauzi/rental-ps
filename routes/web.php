@@ -1,8 +1,9 @@
 <?php
 
-use App\Livewire\ServiceTypeResource\ListServiceType;
-use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\API\MidtransController;
+use App\Livewire\ServiceTypeResource\ListServiceType;
 
 Route::get('/', function () {
     return view('home');
@@ -27,3 +28,10 @@ Route::middleware(['auth'])->group(function () {
 });
 
 require __DIR__ . '/auth.php';
+
+
+
+Route::post('midtrans/callback', [MidtransController::class, 'callback']);
+Route::get('midtrans/finish', [MidtransController::class, 'finishRedirect']);
+Route::get('midtrans/unfinish', [MidtransController::class, 'unfinishRedirect']);
+Route::get('midtrans/failed', [MidtransController::class, 'errorRedirect'])->name('pages.redirect.failed');
