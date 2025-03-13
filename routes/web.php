@@ -1,5 +1,6 @@
 <?php
 
+use App\Livewire\ServiceTypeResource\ListServiceType;
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 
@@ -12,6 +13,8 @@ Route::middleware(['isAdmin'])->group(function () {
     Route::view('dashboard', 'dashboard')
         ->middleware(['auth', 'verified'])
         ->name('dashboard');
+
+    Route::get('services', ListServiceType::class)->name('services');
 });
 
 
