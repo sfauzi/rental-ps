@@ -1,4 +1,4 @@
-<x-layouts.master>
+<x-layouts.master title="Home">
     <div
         class="relative isolate flex items-center gap-x-6 overflow-hidden bg-gray-50 px-6 py-2.5 sm:px-3.5 sm:before:flex-1">
         <div class="absolute top-1/2 left-[max(-7rem,calc(50%-52rem))] -z-10 -translate-y-1/2 transform-gpu blur-2xl"
@@ -15,10 +15,10 @@
         </div>
         <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
             <p class="text-sm/6 text-gray-900">
-                <strong class="font-semibold">GeneriCon 2023</strong><svg viewBox="0 0 2 2"
+                <strong class="font-semibold">Digital Hero</strong><svg viewBox="0 0 2 2"
                     class="mx-2 inline size-0.5 fill-current" aria-hidden="true">
                     <circle cx="1" cy="1" r="1" />
-                </svg>Join us in Denver from June 7 – 9 to see what’s coming next.
+                </svg>Join us in Digital Hero to explore the future of PlayStation rental booking systems! 🚀.
             </p>
             <a href="{{ route('login') }}"
                 class="flex-none rounded-full bg-gray-900 px-3.5 py-1 text-sm font-semibold text-white shadow-xs hover:bg-gray-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900">Login
@@ -53,14 +53,14 @@
                     </defs>
                 </svg>
                 <div class="mx-auto max-w-md text-center lg:mx-0 lg:flex-auto lg:py-32 lg:text-left">
-                    <h2 class="text-3xl font-semibold tracking-tight text-balance text-white sm:text-4xl">Boost your
-                        productivity. Start using our app today.</h2>
-                    <p class="mt-6 text-lg/8 text-pretty text-gray-300">Ac euismod vel sit maecenas id pellentesque eu
-                        sed consectetur. Malesuada adipiscing sagittis vel nulla.</p>
+                    <h2 class="text-3xl font-semibold tracking-tight text-balance text-white sm:text-4xl">Level Up Your
+                        Gaming Experience</h2>
+                    <p class="mt-6 text-lg/8 text-pretty text-gray-300">Easily book and manage your PlayStation rentals
+                        with our app. Start playing today!</p>
                     <div class="mt-10 flex items-center justify-center gap-x-6 lg:justify-start">
-                        <a href="#"
-                            class="rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-gray-900 shadow-xs hover:bg-gray-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">Get
-                            started</a>
+                        <a href="{{ route('booking') }}"
+                            class="rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-gray-900 shadow-xs hover:bg-gray-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">Booking
+                            Now</a>
                         <a href="#" class="text-sm/6 font-semibold text-white">Learn more <span
                                 aria-hidden="true">→</span></a>
                     </div>

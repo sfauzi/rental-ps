@@ -20,8 +20,7 @@ class Booking extends Model
         'weekend_surcharge',
         'total_price',
         'payment_status',
-        'transaction_id',
-        'snap_token',
+        'payment_url',
     ];
 
     protected $casts = [
@@ -43,21 +42,21 @@ class Booking extends Model
         return $this->belongsTo(ServiceType::class);
     }
 
-    public function isWeekend()
-    {
-        $weekDay = $this->booking_date->dayOfWeek;
-        return $weekDay == 0 || $weekDay == 6; // 0 = Sunday, 6 = Saturday
-    }
+    // public function isWeekend()
+    // {
+    //     $weekDay = $this->booking_date->dayOfWeek;
+    //     return $weekDay == 0 || $weekDay == 6; // 0 = Sunday, 6 = Saturday
+    // }
 
-    public function calculateTotalPrice()
-    {
-        $basePrice = $this->serviceType->price;
-        $weekendSurcharge = $this->isWeekend() ? 50000 : 0;
+    // public function calculateTotalPrice()
+    // {
+    //     $basePrice = $this->serviceType->price;
+    //     $weekendSurcharge = $this->isWeekend() ? 50000 : 0;
 
-        $this->base_price = $basePrice;
-        $this->weekend_surcharge = $weekendSurcharge;
-        $this->total_price = $basePrice + $weekendSurcharge;
+    //     $this->base_price = $basePrice;
+    //     $this->weekend_surcharge = $weekendSurcharge;
+    //     $this->total_price = $basePrice + $weekendSurcharge;
 
-        return $this->total_price;
-    }
+    //     return $this->total_price;
+    // }
 }

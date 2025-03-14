@@ -3,11 +3,19 @@
 use Livewire\Volt\Volt;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\MidtransController;
+use App\Livewire\Booking;
 use App\Livewire\ServiceTypeResource\ListServiceType;
 
 Route::get('/', function () {
     return view('home');
 })->name('home');
+
+Route::middleware(['auth'])->group(function () {
+    // User Booking Flow
+    Route::get('/booking', Booking::class)->name('booking');
+
+    
+});
 
 
 Route::middleware(['isAdmin'])->group(function () {
