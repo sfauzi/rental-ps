@@ -134,7 +134,7 @@
 
                     <!-- Action Button based on status -->
                     @if ($booking->payment_status === 'success')
-                        <a href="{{ route('bookings.index') }}"
+                        <a href="{{ route('my-booking') }}"
                             class="block w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-4 rounded-lg text-center transition duration-200">
                             View My Bookings
                         </a>
@@ -165,7 +165,8 @@
 
             <!-- Help Link -->
             <div class="text-center mt-6">
-                <a href="https://wa.me/6288229877220?text=Hello,%20I%20need%20to%help%20my%20booking." class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                <a href="https://wa.me/6288229877220?text=Hello,%20I%20need%20to%help%20my%20booking."
+                    class="text-blue-600 hover:text-blue-800 text-sm font-medium">
                     Need help with your booking? Contact our support team
                 </a>
             </div>
