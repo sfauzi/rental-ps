@@ -6,6 +6,7 @@ use Midtrans\Config;
 use App\Models\Booking;
 use Midtrans\Notification;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 
 class MidtransController extends Controller
@@ -18,52 +19,74 @@ class MidtransController extends Controller
         Config::$isSanitized = config('services.midtrans.isSanitized');
         Config::$is3ds = config('services.midtrans.is3ds');
 
-        // Buat instance midtrans notification
-        $notification = new Notification();
+        try {
+            // Buat instance midtrans notification
+            $notification = new Notification();
 
-        // Assign ke variable untuk memudahkan coding
-        $status = $notification->transaction_status;
-        $type = $notification->payment_type;
-        $fraud = $notification->fraud_status;
-        $orderId = $notification->order_id;
+            // Assign ke variable untuk memudahkan coding
+            $status = $notification->transaction_status;
+            $type = $notification->payment_type;
+            $fraud = $notification->fraud_status;
+            $orderId = $notification->order_id;
 
-        // Cari transaksi berdasarkan ID
-        $booking = Booking::findOrFail($orderId);
+            // Cari transaksi berdasarkan booking_code
+            $booking = Booking::where('booking_code', $orderId)->first();
 
-        // Handle notification status midtrans
-        if ($status == 'capture') {
-            if ($type == 'credit_card') {
-                if ($fraud == 'challenge') {
-                    $booking->payment_status = 'pending';
-                } else {
-                    $booking->payment_status = 'success';
-                }
+            if (!$booking) {
+                return response()->json([
+                    'meta' => [
+                        'code' => 404,
+                        'message' => 'Transaction not found',
+                    ],
+                ], 404);
             }
-        } elseif ($status == 'settlement') {
-            $booking->payment_status = 'success';
-        } elseif ($status == 'pending') {
-            $booking->payment_status = 'pending';
-        } elseif ($status == 'deny') {
-            $booking->payment_status = 'cancelled';
-        } elseif ($status == 'expire') {
-            $booking->payment_status = 'cancelled';
-        } elseif ($status == 'cancel') {
-            $booking->payment_status = 'cancelled';
+
+            // Handle notification status midtrans
+            switch ($status) {
+                case 'capture':
+                    if ($type == 'credit_card') {
+                        $booking->payment_status = $fraud == 'challenge' ? 'pending' : 'success';
+                    }
+                    break;
+                case 'settlement':
+                    $booking->payment_status = 'success';
+                    break;
+                case 'pending':
+                    $booking->payment_status = 'pending';
+                    break;
+                case 'deny':
+                case 'expire':
+                case 'cancel':
+                    $booking->payment_status = 'cancelled';
+                    break;
+            }
+
+            // Kirim notifikasi email
+            // Mail::to($booking->user->email)->send(new OrderNotification($booking, $booking->payment_status));
+
+            // Simpan transaksi
+            $booking->save();
+
+            // Optional: Kirim notifikasi email
+            // $this->sendPaymentNotification($transaction);
+
+            return response()->json([
+                'meta' => [
+                    'code' => 200,
+                    'message' => 'Midtrans Notification Processed Successfully',
+                ],
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Midtrans Callback Error: ' . $e->getMessage());
+
+            return response()->json([
+                'meta' => [
+                    'code' => 500,
+                    'message' => 'Internal Server Error',
+                    'error' => $e->getMessage()
+                ],
+            ], 500);
         }
-
-        // Kirim notifikasi email
-        // Mail::to($booking->user->email)->send(new BookingNotification($booking, $booking->payment_status));
-
-        // Simpan transaksi
-        $booking->save();
-
-        // Return response
-        return response()->json([
-            'meta' => [
-                'code' => 200,
-                'message' => 'Midtrans Notification Success',
-            ],
-        ]);
     }
 
     public function finishRedirect(Request $request)
@@ -72,23 +95,29 @@ class MidtransController extends Controller
         $statusCode = $request->input('status_code');
         $transactionStatus = $request->input('transaction_status');
 
-        // Ambil transaksi berdasarkan ID order
-        $booking = Booking::where('id', $orderId)->first();
-        //  $transaction = Transaction::where('id', $orderId)->first();
+        // Cari transaksi berdasarkan booking_code
+        $booking = Booking::where('booking_code', $orderId)->first();
 
-        // Jika pembayaran berhasil (status "settlement"), arahkan pengguna ke halaman success
-        if ($statusCode == 200 && $transactionStatus == 'settlement') {
-            return view('pages.redirect.success', [
-                'booking' => $booking,
-            ]);
-        } else if ($statusCode == 201 && $transactionStatus == 'pending') {
-            return view('pages.redirect.unfinish', [
-                'booking' => $booking,
-            ]);
-        } else {
-            return view('pages.redirect.failed', [
-                'booking' => $booking,
-            ]);
+        if (!$booking) {
+            return redirect()->route('transaction.not.found')->with('error', 'Transaksi tidak ditemukan');
+        }
+
+        // Tentukan view berdasarkan status transaksi
+        switch (true) {
+            case ($statusCode == 200 && $transactionStatus == 'settlement'):
+                return view('pages.confirmations.success', [
+                    'booking' => $booking,
+                ]);
+
+            case ($statusCode == 201 && $transactionStatus == 'pending'):
+                return view('pages.confirmations.unfinish', [
+                    'booking' => $booking,
+                ]);
+
+            default:
+                return view('pages.confirmations.failed', [
+                    'booking' => $booking,
+                ]);
         }
     }
 
@@ -98,14 +127,34 @@ class MidtransController extends Controller
         $statusCode = $request->input('status_code');
         $transactionStatus = $request->input('transaction_status');
 
-        // Jika pembayaran berhasil (status "settlement"), arahkan pengguna ke halaman success
-        if ($statusCode == 201 && $transactionStatus == 'pending') {
-            return view('pages.redirect.unfinish');
+        // Cari transaksi berdasarkan booking_code
+        $booking = Booking::where('booking_code', $orderId)->first();
+
+        if (!$booking) {
+            return redirect()->route('transaction.not.found')->with('error', 'Transaksi tidak ditemukan');
         }
+
+        if ($statusCode == 201 && $transactionStatus == 'pending') {
+            return view('pages.confirmations.unfinish', [
+                'booking' => $booking,
+            ]);
+        }
+
+        // Redirect ke halaman gagal jika tidak sesuai kondisi
+        return view('pages.confirmations.failed', [
+            'booking' => $booking,
+        ]);
     }
 
     public function errorRedirect(Request $request)
     {
-        return view('pages.redirect.failed');
+        $orderId = $request->input('order_id');
+
+        // Cari transaksi berdasarkan booking_code
+        $booking = Booking::where('booking_code', $orderId)->first();
+
+        return view('pages.confirmations.failed', [
+            'booking' => $booking,
+        ]);
     }
 }

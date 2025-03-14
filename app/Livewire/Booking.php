@@ -86,10 +86,16 @@ class Booking extends Component
         // **Ambil harga dari session agar tetap sama dengan yang ditampilkan**
         $totalPrice = session()->get('fixed_total_price', $this->totalPrice);
 
+        // Generate booking_code with the format PTA + datetime + 3-digit random number
+        $dateTime = now()->format('YmdHis'); // Format as YYYYMMDDHHMMSS
+        $randomNumber = rand(100, 999); // Generate a random 3-digit number
+        $bookingCode = 'DHO' . $dateTime . $randomNumber;
+
         // Create booking record
         $booking = ModelsBooking::create([
             'user_id' => auth()->user()->id,
             'service_type_id' => $this->serviceTypeId,
+            'booking_code' => $bookingCode, // Add booking_code here
             'booking_date' => $this->bookingDate,
             'start_time' => $this->startTime,
             'end_time' => $this->endTime,
@@ -109,7 +115,7 @@ class Booking extends Component
         // Midtrans transaction parameters
         $midtransParams = [
             'transaction_details' => [
-                'order_id' => $booking->id,
+                'order_id' => $booking->booking_code,
                 'gross_amount' => (int) $this->totalPrice,
             ],
             'customer_details' => [
@@ -129,7 +135,7 @@ class Booking extends Component
 
             // **Hapus session harga setelah redirect**
             session()->forget('fixed_total_price');
-            
+
             // Redirect ke halaman pembayaran Midtrans
             return redirect($paymentUrl);
         } catch (\Exception $e) {

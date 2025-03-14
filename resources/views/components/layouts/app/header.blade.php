@@ -12,12 +12,20 @@
             </a>
 
             <flux:navbar class="-mb-px max-lg:hidden">
+                @if(Auth::check() && Auth::user()->role === 'admin')
                 <flux:navbar.item icon="layout-grid" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>
                     {{ __('Dashboard') }}
                 </flux:navbar.item>
-                <flux:navbar.item icon="star" :href="route('services')" :current="request()->routeIs('services')" wire:navigate>
-                    {{ __('Services') }}
-                </flux:navbar.item>
+                @endif
+                @if(Auth::check() && Auth::user()->role === 'admin')
+                    <flux:navbar.item icon="star" :href="route('services')" :current="request()->routeIs('services')" wire:navigate>
+                        {{ __('Services') }}
+                    </flux:navbar.item>
+                @endif
+
+                 <flux:navbar.item icon="receipt-percent" :href="route('my-booking')" :current="request()->routeIs('my-booking')" wire:navigate>
+                        {{ __('Booking') }}
+                 </flux:navbar.item>
             </flux:navbar>
 
             <flux:spacer />

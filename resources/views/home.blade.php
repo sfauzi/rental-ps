@@ -20,9 +20,17 @@
                     <circle cx="1" cy="1" r="1" />
                 </svg>Join us in Digital Hero to explore the future of PlayStation rental booking systems! 🚀.
             </p>
-            <a href="{{ route('login') }}"
-                class="flex-none rounded-full bg-gray-900 px-3.5 py-1 text-sm font-semibold text-white shadow-xs hover:bg-gray-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900">Login
-                now <span aria-hidden="true">&rarr;</span></a>
+            @if (Auth::check())
+                <a href="{{ route('my-booking') }}"
+                    class="flex-none rounded-full bg-blue-600 px-3.5 py-1 text-sm font-semibold text-white shadow-xs hover:bg-blue-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">
+                    My Booking <span aria-hidden="true">&rarr;</span>
+                </a>
+            @else
+                <a href="{{ route('login') }}"
+                    class="flex-none rounded-full bg-gray-900 px-3.5 py-1 text-sm font-semibold text-white shadow-xs hover:bg-gray-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900">
+                    Login Now <span aria-hidden="true">&rarr;</span>
+                </a>
+            @endif
         </div>
         <div class="flex flex-1 justify-end">
             <button type="button" class="-m-3 p-3 focus-visible:outline-offset-[-4px]">

@@ -14,6 +14,11 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'isAdmin' => \App\Http\Middleware\IsAdmin::class,
         ]);
+
+        $middleware->validateCsrfTokens(except: [
+            'midtrans/callback',
+            'midtrans/*',
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
