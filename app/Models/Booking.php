@@ -14,7 +14,8 @@ class Booking extends Model
         'user_id',
         'service_type_id',
         'booking_code',
-        'booking_date',
+        'start_date',      // Changed from booking_date
+        'end_date',        // New field
         'start_time',
         'end_time',
         'base_price',
@@ -25,13 +26,12 @@ class Booking extends Model
     ];
 
     protected $casts = [
-        'booking_date' => 'date',
+        'start_date' => 'date',
+        'end_date' => 'date',
         'start_time' => 'datetime',
         'end_time' => 'datetime',
-        'base_price' => 'decimal:2',
-        'weekend_surcharge' => 'decimal:2',
-        'total_price' => 'decimal:2',
     ];
+
 
     public function user()
     {
