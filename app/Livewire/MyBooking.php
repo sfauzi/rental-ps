@@ -9,6 +9,11 @@ use Illuminate\Support\Facades\Auth;
 class MyBooking extends Component
 {
 
+    public function view($id)
+    {
+        $this->dispatch("viewBooking", $id);
+    }
+
     public function render()
     {
         $bookings = Booking::where('user_id', Auth::id())->orderBy('created_at', 'desc')->get();

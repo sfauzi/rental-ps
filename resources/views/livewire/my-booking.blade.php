@@ -4,13 +4,14 @@
             <h2 class="text-lg font-semibold text-gray-700">My Bookings</h2>
         </div>
 
+        @livewire('view-booking')
+
         <div class="overflow-x-auto mt-[30px]">
             <table class="w-full border border-gray-300 rounded-lg">
                 <thead>
                     <tr class="bg-gray-200 text-gray-700">
                         <th class="py-2 px-4 border">Booking Code</th>
                         <th class="py-2 px-4 border">Service</th>
-                        <th class="py-2 px-4 border">Date</th>
                         <th class="py-2 px-4 border">Time</th>
                         <th class="py-2 px-4 border">Total Price</th>
                         <th class="py-2 px-4 border">Payment</th>
@@ -22,7 +23,6 @@
                         <tr class="hover:bg-gray-100 transition">
                             <td class="py-2 px-4 border">{{ $booking->booking_code }}</td>
                             <td class="py-2 px-4 border">{{ $booking->serviceType->name }}</td>
-                            <td class="py-2 px-4 border">{{ $booking->booking_date }}</td>
                             <td class="py-2 px-4 border">{{ $booking->start_time }}</td>
                             <td class="py-2 px-4 border text-green-600 font-semibold">
                                 Rp {{ number_format($booking->total_price, 0, ',', '.') }}
@@ -42,7 +42,8 @@
                                         Pay Now
                                     </flux:button>
                                 @else
-                                    <flux:button href="" size="sm">
+                                    <flux:button wire:click="view('{{ $booking->booking_code }}')"
+                                        size="sm">
                                         View
                                     </flux:button>
                                 @endif
